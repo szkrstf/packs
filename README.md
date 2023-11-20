@@ -2,6 +2,16 @@
 
 A http server for calulating packages for orders.
 
+## Config
+The sizes can be configured with a file. The location of the config file can be specified with the `-config` flag. Example:
+```
+250
+500
+1000
+2000
+5000
+```
+
 ## Build
 ```
 make build
