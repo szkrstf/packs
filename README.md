@@ -2,6 +2,25 @@
 
 A http server for calulating packages for orders.
 
+## Build
+```
+make build
+```
+
+This will run all tests and build the application. (Alternatively you can use `make build-linux` to build a linux specific executable.)
+
+## Test
+```
+make test
+```
+
+## Run
+```
+./packs -addr ":8080" -config "sizes"
+```
+
+The ui is runninng on [http://localhost:8080/](http://localhost:8080/)
+
 ## API
 
 ### Calculate
