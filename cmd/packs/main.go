@@ -36,6 +36,7 @@ func main() {
 	calculator := packs.NewCalculator(sizeStore)
 
 	http.Handle("/api/calculate", api.NewCalculateHangler(calculator))
+	http.Handle("/api/sizes", api.NewSizeHandler(sizeStore))
 	http.Handle("/", ui.NewCalculateHandler(calculator))
 
 	log.Println("server listening on", *addr)
