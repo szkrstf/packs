@@ -1,6 +1,7 @@
 # packs
 
 A http server for calulating packages for orders.
+You can see a running instance on [https://packs.fly.dev](https://packs.fly.dev).
 
 ## Config
 The sizes can be configured with a file. The location of the config file can be specified with the `-config` flag. Example:
