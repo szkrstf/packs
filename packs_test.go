@@ -9,23 +9,24 @@ import (
 )
 
 func TestCalculate(t *testing.T) {
-	s := calculator{sizeStore: &mock.SizeStore{
-		GetFn: func() []int { return []int{250, 500, 1000, 2000, 5000} },
-	}}
-
 	tt := []struct {
+		sizes []int
 		items int
 		packs map[int]int
 	}{
-		{items: 0, packs: map[int]int{}},
-		{items: 1, packs: map[int]int{250: 1}},
-		{items: 250, packs: map[int]int{250: 1}},
-		{items: 251, packs: map[int]int{250: 2}},
-		{items: 501, packs: map[int]int{250: 1, 500: 1}},
-		{items: 12001, packs: map[int]int{250: 1, 2000: 1, 5000: 2}},
+		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 0, packs: map[int]int{}},
+		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 1, packs: map[int]int{250: 1}},
+		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 250, packs: map[int]int{250: 1}},
+		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 251, packs: map[int]int{500: 1}},
+		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 501, packs: map[int]int{250: 1, 500: 1}},
+		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 12001, packs: map[int]int{250: 1, 2000: 1, 5000: 2}},
+		{sizes: []int{23, 31, 53}, items: 152, packs: map[int]int{23: 2, 53: 2}},
 	}
 
 	for _, tc := range tt {
+		s := calculator{sizeStore: &mock.SizeStore{
+			GetFn: func() []int { return tc.sizes },
+		}}
 		if got, want := s.Calculate(tc.items), tc.packs; !reflect.DeepEqual(got, want) {
 			t.Errorf("%v: got: %v; want: %v", tc.items, got, want)
 		}

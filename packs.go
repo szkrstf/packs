@@ -26,19 +26,49 @@ func NewCalculator(sizeStore SizeStore) Calculator {
 // Calculate calculates package sizes for a number of items.
 func (c *calculator) Calculate(items int) map[int]int {
 	sizes := c.sizeStore.Get()
-	res := make(map[int]int)
-	for i := 0; i < len(sizes); i++ {
-		size := sizes[len(sizes)-1-i]
-		if items < size {
-			continue
+	combs := combinations(sizes, items)
+
+	out := make(map[int]int)
+	var mitems, mpacks int
+	for i, comb := range combs {
+		var items, packs int
+		for k, v := range comb {
+			items += k * v
+			packs += v
 		}
-		res[size] = items / size
-		items = items % size
+		if i == 0 || items < mitems || (items == mitems && packs < mpacks) {
+			mitems = items
+			mpacks = packs
+			out = comb
+		}
 	}
-	if items > 0 && len(sizes) > 0 {
-		res[sizes[0]] += 1
+	return out
+}
+
+// combinations returns possible combinations for packages.
+func combinations(sizes []int, items int) []map[int]int {
+	var bt func(out []map[int]int, curr map[int]int, sum, i int) []map[int]int
+	bt = func(out []map[int]int, curr map[int]int, sum, i int) []map[int]int {
+		if sum >= items {
+			out = append(out, curr)
+			return out
+		}
+		for j := i; j < len(sizes); j++ {
+			m := mcopy(curr)
+			m[sizes[j]]++
+			out = bt(out, m, sum+sizes[j], j)
+		}
+		return out
 	}
-	return res
+	return bt(nil, make(map[int]int), 0, 0)
+}
+
+func mcopy(src map[int]int) map[int]int {
+	dst := make(map[int]int)
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
 }
 
 // SizeStore stores sizes.
