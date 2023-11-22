@@ -38,6 +38,7 @@ func main() {
 	http.Handle("/api/calculate", api.NewCalculateHangler(calculator))
 	http.Handle("/api/sizes", api.NewSizeHandler(sizeStore))
 	http.Handle("/", ui.NewCalculateHandler(calculator))
+	http.Handle("/sizes", ui.NewSizeHandler(sizeStore))
 
 	log.Println("server listening on", *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
