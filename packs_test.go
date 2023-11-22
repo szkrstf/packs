@@ -21,6 +21,9 @@ func TestCalculate(t *testing.T) {
 		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 501, packs: map[int]int{250: 1, 500: 1}},
 		{sizes: []int{250, 500, 1000, 2000, 5000}, items: 12001, packs: map[int]int{250: 1, 2000: 1, 5000: 2}},
 		{sizes: []int{23, 31, 53}, items: 152, packs: map[int]int{23: 2, 53: 2}},
+		{sizes: []int{23, 31, 53}, items: 499_995, packs: map[int]int{23: 2, 53: 9433}},
+		{sizes: []int{23, 31, 53}, items: 500_000, packs: map[int]int{23: 2, 31: 7, 53: 9429}},
+		{sizes: []int{25, 50, 75}, items: 5_000_000_000, packs: map[int]int{50: 1, 75: 66666666}},
 	}
 
 	for _, tc := range tt {

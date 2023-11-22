@@ -26,6 +26,7 @@ func NewCalculator(sizeStore SizeStore) Calculator {
 // Calculate calculates package sizes for a number of items.
 func (c *calculator) Calculate(items int) map[int]int {
 	sizes := c.sizeStore.Get()
+	slices.Reverse(sizes)
 	combs := combinations(sizes, items)
 
 	out := make(map[int]int)
@@ -55,8 +56,13 @@ func combinations(sizes []int, items int) []map[int]int {
 		}
 		for j := i; j < len(sizes); j++ {
 			m := mcopy(curr)
-			m[sizes[j]]++
-			out = bt(out, m, sum+sizes[j], j)
+			// optimization to deal with large number of items and small package sizes.
+			inc := 1
+			if (items-sum)/sizes[j] > 10 {
+				inc = ((items - sum) / sizes[j]) - 10
+			}
+			m[sizes[j]] += inc
+			out = bt(out, m, sum+(sizes[j]*inc), j)
 		}
 		return out
 	}
