@@ -12,6 +12,7 @@ import (
 
 	"github.com/szkrstf/packs"
 	"github.com/szkrstf/packs/api"
+	"github.com/szkrstf/packs/ui"
 )
 
 func main() {
@@ -34,6 +35,7 @@ func main() {
 	}
 
 	http.Handle("/api/calculate", api.NewCalculateHangler(calculator))
+	http.Handle("/", ui.NewCalculateHandler(calculator))
 
 	log.Println("server listening on", *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
