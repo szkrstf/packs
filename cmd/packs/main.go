@@ -29,10 +29,11 @@ func main() {
 		}
 	}
 
-	calculator, err := packs.NewCalculator(sizes)
+	sizeStore, err := packs.NewSizeStore(sizes)
 	if err != nil {
 		log.Fatal(err)
 	}
+	calculator := packs.NewCalculator(sizeStore)
 
 	http.Handle("/api/calculate", api.NewCalculateHangler(calculator))
 	http.Handle("/", ui.NewCalculateHandler(calculator))

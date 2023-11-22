@@ -4,10 +4,14 @@ import (
 	"errors"
 	"reflect"
 	"testing"
+
+	"github.com/szkrstf/packs/mock"
 )
 
 func TestCalculate(t *testing.T) {
-	s := calculator{sizes: []int{250, 500, 1000, 2000, 5000}}
+	s := calculator{sizeStore: &mock.SizeStore{
+		GetFn: func() []int { return []int{250, 500, 1000, 2000, 5000} },
+	}}
 
 	tt := []struct {
 		items int
@@ -28,7 +32,10 @@ func TestCalculate(t *testing.T) {
 	}
 }
 
-func TestValidateSizes(t *testing.T) {
+func TestSizeStore(t *testing.T) {
+	sizes := []int{1, 2}
+	s := sizeStore{sizes: sizes}
+
 	tt := []struct {
 		input []int
 		err   error
@@ -41,9 +48,15 @@ func TestValidateSizes(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := validateSizes(tc.input)
+		err := s.Set(tc.input)
 		if !errors.Is(err, tc.err) {
-			t.Errorf("%v: err should be %v; got: %v", tc.input, tc.err, err)
+			t.Errorf("err should be %v; got: %v", tc.err, err)
+		}
+		if err == nil {
+			sizes = tc.input
+		}
+		if got, want := s.Get(), sizes; !reflect.DeepEqual(got, want) {
+			t.Errorf("%v: got: %v; want: %v", tc.input, got, want)
 		}
 	}
 }

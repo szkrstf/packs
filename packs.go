@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"sync"
 )
 
 var ErrInvalidSizes = errors.New("invalid sizes")
@@ -14,32 +15,68 @@ type Calculator interface {
 }
 
 type calculator struct {
-	sizes []int
+	sizeStore SizeStore
 }
 
 // NewCalculator validates the input sizes and creates a new calculator service.
-func NewCalculator(sizes []int) (Calculator, error) {
-	if err := validateSizes(sizes); err != nil {
-		return nil, err
-	}
-	return &calculator{sizes: sizes}, nil
+func NewCalculator(sizeStore SizeStore) Calculator {
+	return &calculator{sizeStore: sizeStore}
 }
 
 // Calculate calculates package sizes for a number of items.
 func (c *calculator) Calculate(items int) map[int]int {
+	sizes := c.sizeStore.Get()
 	res := make(map[int]int)
-	for i := 0; i < len(c.sizes); i++ {
-		size := c.sizes[len(c.sizes)-1-i]
+	for i := 0; i < len(sizes); i++ {
+		size := sizes[len(sizes)-1-i]
 		if items < size {
 			continue
 		}
 		res[size] = items / size
 		items = items % size
 	}
-	if items > 0 && len(c.sizes) > 0 {
-		res[c.sizes[0]] += 1
+	if items > 0 && len(sizes) > 0 {
+		res[sizes[0]] += 1
 	}
 	return res
+}
+
+// SizeStore stores sizes.
+type SizeStore interface {
+	Get() []int
+	Set([]int) error
+}
+
+type sizeStore struct {
+	sizes []int
+	m     sync.RWMutex
+}
+
+// NewSizeStore validates the input sizes and creates a new SizeStore.
+func NewSizeStore(sizes []int) (SizeStore, error) {
+	s := &sizeStore{sizes: sizes}
+	s.Set(sizes)
+	return s, nil
+}
+
+// Get returns the sizes.
+func (s *sizeStore) Get() []int {
+	s.m.RLock()
+	defer s.m.RUnlock()
+
+	return append([]int{}, s.sizes...)
+}
+
+// Set validates and sets the sizes.
+func (s *sizeStore) Set(sizes []int) error {
+	s.m.Lock()
+	defer s.m.Unlock()
+
+	if err := validateSizes(sizes); err != nil {
+		return err
+	}
+	s.sizes = append([]int{}, sizes...)
+	return nil
 }
 
 func validateSizes(sizes []int) error {
