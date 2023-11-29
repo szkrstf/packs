@@ -3,16 +3,6 @@
 A http server for calulating packages for orders.
 You can see a running instance on [https://packs.fly.dev](https://packs.fly.dev).
 
-## Config
-The sizes can be configured with a file. The location of the config file can be specified with the `-config` flag. Example:
-```
-250
-500
-1000
-2000
-5000
-```
-
 ## Build
 ```
 make build
@@ -31,6 +21,31 @@ make test
 ```
 
 The ui is runninng on [http://localhost:8080/](http://localhost:8080/)
+
+## Build and run with Docker
+A Dockerfile is provided to build and run the application in a container.
+### Build the image
+```
+docker build -t packs .
+```
+### Run the container:
+```
+docker run -p 8080:8080 packs
+```
+You can also use the `-d` flag to run it in detached mode.
+```
+docker run -d -p 8080:8080 packs
+```
+
+## Config
+The sizes can be configured with a file. The location of the config file can be specified with the `-config` flag. Example:
+```
+250
+500
+1000
+2000
+5000
+```
 
 ## API
 
